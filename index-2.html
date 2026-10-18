@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Pitch Calculator</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <script src="https://tailwindcss.com"></script>
+    <style>
+        .pixel-bg {
+            background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 0);
+            background-color: #111827;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center p-4 font-sans">
+
+    <main class="w-full max-w-md bg-slate-800 rounded-2xl shadow-xl border border-slate-700 p-6 mt-8">
+        <h1 class="text-2xl font-bold text-center mb-6 tracking-tight text-white">Pixel Pitch Comparator</h1>
+
+        <!-- Screen Size Selection Dropdown -->
+        <div class="mb-8">
+            <label for="sizeSelect" class="block text-sm font-medium text-slate-400 mb-2">Select Display Diagonal Size</label>
+            <select id="sizeSelect" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="55">55" Display</option>
+                <option value="65" selected>65" Display</option>
+                <option value="75">75" Display</option>
+                <option value="85">85" Display</option>
+                <option value="90">90" Display</option>
+                <option value="98">98" Display</option>
+                <option value="100">100" Display</option>
+                <option value="120">120" Display</option>
+                <option value="135">135" Display</option>
+                <option value="150">150" Display</option>
+                <option value="165">165" Display</option>
+                <option value="200">200" Display</option>
+            </select>
+        </div>
+
+        <!-- Side by Side Layout Boxes -->
+        <div class="grid grid-cols-2 gap-4">
+            <!-- 1080p Panel -->
+            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/60 flex flex-col items-center">
+                <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">1080p Full HD</h2>
+                <div id="pitch1080" class="text-xl font-bold text-blue-400 my-2">0.75 mm</div>
+                <div class="w-full h-32 rounded-lg border border-slate-700 pixel-bg relative overflow-hidden mt-2">
+                    <div id="grid1080" class="absolute inset-0"></div>
+                </div>
+            </div>
+
+            <!-- 4K Panel -->
+            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/60 flex flex-col items-center">
+                <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">4K Ultra HD</h2>
+                <div id="pitch4k" class="text-xl font-bold text-emerald-400 my-2">0.37 mm</div>
+                <div class="w-full h-32 rounded-lg border border-slate-700 pixel-bg relative overflow-hidden mt-2">
+                    <div id="grid4k" class="absolute inset-0"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const sizeSelect = document.getElementById('sizeSelect');
+        const pitch1080 = document.getElementById('pitch1080');
+        const pitch4k = document.getElementById('pitch4k');
+        const grid1080 = document.getElementById('grid1080');
+        const grid4k = document.getElementById('grid4k');
+
+        function updateCalculations() {
+            const diagonal = parseFloat(sizeSelect.value);
+
+            // Calculate screen dimensions (16:9 ratio formulas)
+            const heightInches = (diagonal * 9) / Math.sqrt(337);
+            const widthInches = heightInches * (16 / 9);
+            const widthMm = widthInches * 25.4;
+
+            const p1080 = widthMm / 1920;
+            const p4k = widthMm / 3840;
+
+            // Update text displays
+            pitch1080.textContent = `${p1080.toFixed(2)} mm`;
+            pitch4k.textContent = `${p4k.toFixed(2)} mm`;
+
+            // Adjust relative background size overlay scaling to simulate physical size shifts
+            const visualScale = 65; 
+            grid1080.style.backgroundSize = `${p1080 * visualScale}px ${p1080 * visualScale}px`;
+            grid1080.style.backgroundImage = 'linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)';
+
+            grid4k.style.backgroundSize = `${p4k * visualScale}px ${p4k * visualScale}px`;
+            grid4k.style.backgroundImage = 'linear-gradient(to right, rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.12) 1px, transparent 1px)';
+        }
+
+        sizeSelect.addEventListener('change', updateCalculations);
+        window.addEventListener('DOMContentLoaded', updateCalculations);
+
+        // Simple Service Worker inline registration to fulfill standalone PWA criteria
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGZ1bmN0aW9uKGV2ZW50KSB7fSk7');
+        }
+    </script>
+</body>
+</html>
